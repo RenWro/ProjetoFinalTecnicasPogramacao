@@ -1,2 +1,6 @@
-package PACKAGE_NAME;public enum Prioridade {
+package PACKAGE_NAME;
+public enum PrioridadeTarefa {
+
+
+
 }
