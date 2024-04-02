@@ -1,10 +1,13 @@
 package models;
 
+import utils.enums.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class Task {
-    public int id;
+    public UUID id;
     public String title;
     public String description;
     public LocalDateTime expirationDate;
@@ -14,7 +17,7 @@ public class Task {
 
     public Task(int id, String title, String description, LocalDateTime expirationDate, TaskPriority priority, TaskStatus status, List<String> tags) {
 //        id = controllers.TaskController.generateId(); TODO criar gerador de id
-        this.id = id;
+        this.id = UUID.randomUUID();
         this.title = title;
         this.description = description;
         this.expirationDate = expirationDate;
@@ -25,12 +28,10 @@ public class Task {
 
 
     // GETTERS AND SETTERS
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
+
+    public UUID getId() {
+        return id;
     }
 
     public String getTitle() {
