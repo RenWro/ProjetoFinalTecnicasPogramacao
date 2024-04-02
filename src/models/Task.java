@@ -1,3 +1,5 @@
+package models;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -8,10 +10,10 @@ public class Task {
     public LocalDateTime expirationDate;
     public TaskPriority priority;
     public TaskStatus status;
-    public List<String> tags; //TODO lista de TaskTag
+    public List<String> tags; //TODO lista de utils.enums.TaskTag
 
     public Task(int id, String title, String description, LocalDateTime expirationDate, TaskPriority priority, TaskStatus status, List<String> tags) {
-//        id = TaskController.generateId(); TODO criar gerador de id
+//        id = controllers.TaskController.generateId(); TODO criar gerador de id
         this.id = id;
         this.title = title;
         this.description = description;
