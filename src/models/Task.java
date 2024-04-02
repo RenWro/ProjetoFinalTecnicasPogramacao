@@ -15,7 +15,7 @@ public class Task {
     public TaskStatus status;
     public List<String> tags; //TODO lista de utils.enums.TaskTag
 
-    public Task(int id, String title, String description, LocalDateTime expirationDate, TaskPriority priority, TaskStatus status, List<String> tags) {
+    public Task(UUID id, String title, String description, LocalDateTime expirationDate, TaskPriority priority, TaskStatus status, List<String> tags) {
 //        id = controllers.TaskController.generateId(); TODO criar gerador de id
         this.id = UUID.randomUUID();
         this.title = title;
