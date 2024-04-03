@@ -15,23 +15,31 @@ public class Task {
     public TaskStatus status;
     public List<String> tags; //TODO lista de utils.enums.TaskTag
 
+
+    // CONSTRUTOR COM PARÂMETRO DEFAULT CHAMA CONSTRUTOR PRINCIPAL
+    public Task(String title, String description, LocalDateTime creationDate, TaskPriority priority, TaskStatus status, List<String> tags) {
+        this(UUID.randomUUID(), title, description, creationDate, priority, status, tags);
+    }
+
+    // CONSTRUTOR COM PARÂMETROS OBRIGATÓRIOS
     public Task(UUID id, String title, String description, LocalDateTime expirationDate, TaskPriority priority, TaskStatus status, List<String> tags) {
-//        id = controllers.TaskController.generateId(); TODO criar gerador de id
-        this.id = UUID.randomUUID();
+//        this.id = TaskController.generateUuid(null);
+        this.id = id;
         this.title = title;
         this.description = description;
         this.expirationDate = expirationDate;
         this.priority = priority;
         this.status = status;
-        this.tags = tags;
+        this.tags = tags; //TODO ajeitar o funcionamento das tags como enum
     }
 
-
     // GETTERS AND SETTERS
-
-
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id){
+        this.id = id;
     }
 
     public String getTitle() {
@@ -80,5 +88,16 @@ public class Task {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + "\n" +
+                "Title: " + title + "\n" +
+                "Description: " + description + "\n" +
+                "ExpirationDate: " + expirationDate + "\n" +
+                "Priority: " + priority + "\n" +
+                "Status: " + status + "\n" +
+                "Tags: " + tags + "\n";
     }
 }
