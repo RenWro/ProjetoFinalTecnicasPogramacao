@@ -18,13 +18,13 @@ class AddTaskDialog extends JDialog {
     private JPanel taskComponentPanel;
 
     public AddTaskDialog(Frame owner, JPanel taskComponentPanel) {
-        super(owner, "Adicionar Tarefa", true);
+        super(owner, "Add Task", true);
         setSize(400, 300);
         setLayout(new BorderLayout());
 
 
         titlePanel = new JPanel(new BorderLayout());
-        titleLabel = new JLabel("Título", SwingConstants.CENTER);
+        titleLabel = new JLabel("Title", SwingConstants.CENTER);
         titleField = new JTextField();
 
         // adiciona o JLabel e o TextField ao painel
@@ -36,7 +36,7 @@ class AddTaskDialog extends JDialog {
 
         // Cria um JPanel para a descrição
         descriptionPanel = new JPanel(new BorderLayout());
-        descriptionLabel = new JLabel("Descrição", SwingConstants.CENTER);
+        descriptionLabel = new JLabel("Task Description", SwingConstants.CENTER);
         descriptionArea = new JTextArea();
 
         // Adiciona o JLabel e o JTextArea com JScrollPane ao painel
@@ -45,7 +45,7 @@ class AddTaskDialog extends JDialog {
 
         add(descriptionPanel, BorderLayout.CENTER);
 
-        addButton = new JButton("Adicionar Tarefa");
+        addButton = new JButton("Add Task");
         add(addButton, BorderLayout.SOUTH);
 
 
@@ -62,7 +62,7 @@ class AddTaskDialog extends JDialog {
                     taskComponentPanel.repaint();
                     dispose(); // Fecha o TaskDialog
                 } else {
-                    JOptionPane.showMessageDialog(AddTaskDialog.this, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AddTaskDialog.this, "Please fill in all fields", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

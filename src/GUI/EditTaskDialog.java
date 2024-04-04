@@ -12,7 +12,7 @@ class EditTaskDialog extends JDialog {
     private TaskComponent taskComponent;
 
     public EditTaskDialog(JFrame owner, TaskComponent taskComponent) {
-        super(owner, "Editar Tarefa", true);
+        super(owner, "Edit Task", true);
         this.taskComponent = taskComponent;
         setSize(400, 300);
         setLayout(new BorderLayout());
@@ -23,7 +23,7 @@ class EditTaskDialog extends JDialog {
         add(titleField, BorderLayout.NORTH);
         add(new JScrollPane(descriptionArea), BorderLayout.CENTER);
 
-        updateButton = new JButton("Atualizar Tarefa");
+        updateButton = new JButton("Update Task");
         add(updateButton, BorderLayout.SOUTH);
 
         updateButton.addActionListener(new ActionListener() {
