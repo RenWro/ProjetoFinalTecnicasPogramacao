@@ -5,54 +5,43 @@ import utils.enums.TaskPriority;
 import utils.enums.TaskStatus;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class TaskController {
 
     private List<Task> taskList;
-    private List<String> taskTags;
+    private Set<String> taskTags;
+    private final ScheduledExecutorService scheduler;
 
     public TaskController() {
         this.taskList = new ArrayList<>();
-        this.taskTags = new ArrayList<>();
+        this.taskTags = new HashSet<>();
+        this.scheduler = Executors.newScheduledThreadPool(1);
 
-        // method checkForExpiredTasks will be executed each 30s
-        CompletableFuture.runAsync(() -> {
-            while (true) {
-                checkForExpiredTasks();
-                try {
-                    TimeUnit.SECONDS.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, Executors.newSingleThreadExecutor()); //TODO otimizar
+        scheduler.scheduleAtFixedRate(this::checkForExpiredTasks, 0, 15, TimeUnit.SECONDS);
     }
 
     public void addNewTask(String title, String description, LocalDateTime date, TaskPriority priority, TaskStatus status, String... tagNames){
-        List<String> tags = new ArrayList<>();
-        for (String tagName : tagNames) {
-            if (!taskTags.contains(tagName)) {
-                taskTags.add(tagName.toUpperCase());
-            }
-            tags.add(tagName.toUpperCase());
-        }
+        Set<String> tags = Arrays.stream(tagNames)
+                .map(String::toUpperCase)
+                .filter(tagName -> !taskTags.contains(tagName))
+                .peek(taskTags::add)
+                .collect(Collectors.toCollection(HashSet::new));
 
         Task task = new Task(title, description, date, priority, status, tags);
         taskList.add(task);
     }
 
     public void deleteTask(Task task){
-        for (int i = 0; i < taskList.size(); i++) {
-            if (taskList.get(i).getId().equals(task.getId())){
-                taskList.remove(i);
-                break;
-            }
-        }
+        taskList.removeIf(t -> t.getId().equals(task.getId()));
     }
 
     public void editTitle(Task task, String newTitle) {
@@ -73,25 +62,20 @@ public class TaskController {
     }
 
     public void alterTaskStatus(Task task) {
-        if (task.getStatus() == TaskStatus.PENDING) {
-            task.setStatus(TaskStatus.DONE);
-        } else if (task.getStatus() == TaskStatus.DONE) {
-            task.setStatus(TaskStatus.PENDING);
-        }
+        task.setStatus(task.getStatus() == TaskStatus.DONE ? TaskStatus.PENDING : TaskStatus.DONE);
     }
 
     public void checkForExpiredTasks() {
         taskList.stream()
                 .filter(task -> task.getExpirationDate().isBefore(LocalDateTime.now()))
                 .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
-        System.out.println("Verificação feita");
     }
 
     public List<Task> getTaskList() {
         return taskList;
     }
 
-    public List<String> getTaskTags() {
+    public Set<String> getTaskTags() {
         return taskTags;
     }
 }

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class CSVReader {
                             LocalDateTime.parse(data[3].trim(), formatter),
                             TaskPriority.valueOf(data[4].trim().toUpperCase()),
                             TaskStatus.valueOf(data[5].trim().toUpperCase()),
-                            List.of(data[6].split(";"))
+                            Set.of(data[6].split(";"))
                     ))
                     .collect(Collectors.toList());
         } catch (IOException e) {
