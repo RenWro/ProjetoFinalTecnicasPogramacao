@@ -5,24 +5,30 @@ import utils.enums.TaskPriority;
 import utils.enums.TaskStatus;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TaskController {
 
-    public List<Task> taskList = new ArrayList<>();
-    private Timer timer;
+    public List<Task> taskList;
 
     public TaskController() {
         this.taskList = new ArrayList<>();
-        this.timer = new Timer();
 
-        // method checkForExpiredTasks will be executed each minute
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
+        // method checkForExpiredTasks will be executed each 30s
+        CompletableFuture.runAsync(() -> {
+            while (true) {
                 checkForExpiredTasks();
+                try {
+                    TimeUnit.SECONDS.sleep(30);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }, 0, 60000); // 60000 milliseconds = 1 minute
+        }, Executors.newSingleThreadExecutor());
     }
 
     public void addNewTask(String title, String description, LocalDateTime date, TaskPriority priority, TaskStatus status, List<String> tags){
@@ -49,6 +55,7 @@ public class TaskController {
 
     public void editDate(Task task, LocalDateTime newDate) {
         task.setExpirationDate(newDate);
+        checkForExpiredTasks();
     }
 
     public void editPriority(Task task, TaskPriority newPriority) {
@@ -64,11 +71,10 @@ public class TaskController {
     }
 
     public void checkForExpiredTasks() {
-        for (Task task : taskList) {
-            if (task.getExpirationDate().isBefore(LocalDateTime.now())) {
-                task.setStatus(TaskStatus.LATE);
-            }
-        }
+        taskList.stream()
+                .filter(task -> task.getExpirationDate().isBefore(LocalDateTime.now()))
+                .forEach(task -> task.setStatus(TaskStatus.LATE));
+        System.out.println("Verificação feita");
     }
 
     public List<Task> getTaskList() {

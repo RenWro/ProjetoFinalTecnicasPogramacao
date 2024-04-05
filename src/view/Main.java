@@ -44,8 +44,8 @@ public class Main {
         System.out.println("\nDescription edited: ");
         System.out.println(taskToEdit);
 
-        // editing date (now + 1 minute)
-        taskController.editDate(taskToEdit, LocalDateTime.now().plusMinutes(1));
+        // editing date (now)
+        taskController.editDate(taskToEdit, LocalDateTime.now().minusMinutes(1));
         System.out.println("\nExpiration date edited: ");
         System.out.println(taskToEdit);
 
@@ -54,9 +54,9 @@ public class Main {
         System.out.println("\nPriority edited: ");
         System.out.println(taskToEdit);
 
-        System.out.println("\nWaiting a minute to check for expired tasks...");
+        System.out.println("\nWaiting a bit to check for expired tasks...");
         try {
-            Thread.sleep(60000);
+            Thread.sleep(40000); //wait 40 seconds
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
