@@ -29,6 +29,12 @@ public class TaskController {
         scheduler.scheduleAtFixedRate(this::checkForExpiredTasks, 0, 15, TimeUnit.SECONDS);
     }
 
+    public void checkForExpiredTasks() {
+        taskList.stream()
+                .filter(task -> task.getExpirationDate().isBefore(LocalDateTime.now()))
+                .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
+    }
+
     public void addNewTask(String title, String description, LocalDateTime date, TaskPriority priority, TaskStatus status, String... tagNames){
         Set<String> tags = Arrays.stream(tagNames)
                 .map(String::toUpperCase)
@@ -64,38 +70,46 @@ public class TaskController {
     public void alterTaskStatus(Task task) {
         task.setStatus(task.getStatus() == TaskStatus.DONE ? TaskStatus.PENDING : TaskStatus.DONE);
     }
+
+
+    // tag methods
     public void addNewTagToTagList(String newTag){
-	taskTags.add(newTag);
+        taskTags.add(newTag);
     }
 
     public void deleteTagFromTagList(String tagToBeDeleted){
-	taskTags.removeIf(tag -> tag.equals(tagToBeDeleted));
+	    taskTags.removeIf(tag -> tag.equals(tagToBeDeleted));
     }
 
     public void editTagFromTagList(String oldTagName, String newTagName) {
-	taskTags = taskTags.stream()
-			.map(tag -> tag.equals(oldTagName) ? newTagName : tag)
-			.collect(Collectors.toSet());
+        taskTags = taskTags.stream()
+                .map(tag -> tag.equals(oldTagName) ? newTagName : tag)
+                .collect(Collectors.toSet());
     }
+
     public void addTagToTask(Task task, String newTag){
         if (!taskTags.contains(newTag)) {
             taskTags.add(newTag.toUpperCase());
 	}
         task.getTags().add(newTag.toUpperCase());
     }
+
     public void deleteTagFromTask(Task task, String tagToDelete) {
         task.getTags().removeIf(tag -> tag.equals(tagToDelete));
     }
+
     public void editTagFromTask(Task task, String oldTagName, String newTagName) {
         task.setTags(task.getTags().stream()
 			.map(tag -> tag.equals(oldTagName) ? newTagName : tag)
 			.collect(Collectors.toSet()));
     }
-    
-    public void checkForExpiredTasks() {
+
+
+    // getters
+    public void getTaskListAsString() {
         taskList.stream()
-                .filter(task -> task.getExpirationDate().isBefore(LocalDateTime.now()))
-                .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
+                .map(Task::toString)
+                .forEach(System.out::println);
     }
 
     public List<Task> getTaskList() {
