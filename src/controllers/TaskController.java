@@ -35,6 +35,7 @@ public class TaskController {
                 .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
     }
 
+    //TODO instancia a task
     public void addNewTask(String title, String description, LocalDateTime date, TaskPriority priority, TaskStatus status, String... tagNames){
         Set<String> tags = Arrays.stream(tagNames)
                 .map(String::toUpperCase)
@@ -46,47 +47,57 @@ public class TaskController {
         taskList.add(task);
     }
 
+    //TODO exclui a task
     public void deleteTask(Task task){
         taskList.removeIf(t -> t.getId().equals(task.getId()));
     }
 
+    //TODO edita o título
     public void editTitle(Task task, String newTitle) {
         task.setTitle(newTitle);
     }
 
+    //TODO edita a descrição
     public void editDescription(Task task, String newDescription) {
         task.setDescription(newDescription);
     }
 
+    //TODO edita a data
     public void editDate(Task task, LocalDateTime newDate) {
         task.setExpirationDate(newDate);
         checkForExpiredTasks();
     }
 
+    //TODO edita a prioridade
     public void editPriority(Task task, TaskPriority newPriority) {
         task.setPriority(newPriority);
     }
 
+    //TODO edita o status
     public void alterTaskStatus(Task task) {
         task.setStatus(task.getStatus() == TaskStatus.DONE ? TaskStatus.PENDING : TaskStatus.DONE);
     }
 
 
     // tag methods
+    // TODO adiciona tag à lista de todas as tags
     public void addNewTagToTagList(String newTag){
         taskTags.add(newTag);
     }
 
+    // TODO remove tag da lista de todas as tags
     public void deleteTagFromTagList(String tagToBeDeleted){
 	    taskTags.removeIf(tag -> tag.equals(tagToBeDeleted));
     }
 
+    // TODO edita tag na lista de todas as tags
     public void editTagFromTagList(String oldTagName, String newTagName) {
         taskTags = taskTags.stream()
                 .map(tag -> tag.equals(oldTagName) ? newTagName : tag)
                 .collect(Collectors.toSet());
     }
 
+    //TODO adiciona tag à lista de uma task específica
     public void addTagToTask(Task task, String newTag){
         if (!taskTags.contains(newTag)) {
             taskTags.add(newTag.toUpperCase());
@@ -94,10 +105,12 @@ public class TaskController {
         task.getTags().add(newTag.toUpperCase());
     }
 
+    //TODO remove tag da lista de uma task específica
     public void deleteTagFromTask(Task task, String tagToDelete) {
         task.getTags().removeIf(tag -> tag.equals(tagToDelete));
     }
 
+    //TODO edita tag na lista de uma task específica
     public void editTagFromTask(Task task, String oldTagName, String newTagName) {
         task.setTags(task.getTags().stream()
 			.map(tag -> tag.equals(oldTagName) ? newTagName : tag)
@@ -112,10 +125,12 @@ public class TaskController {
                 .forEach(System.out::println);
     }
 
+    //TODO lista de tarefas
     public List<Task> getTaskList() {
         return taskList;
     }
 
+    //TODO lista de tags
     public Set<String> getTaskTags() {
         return taskTags;
     }
