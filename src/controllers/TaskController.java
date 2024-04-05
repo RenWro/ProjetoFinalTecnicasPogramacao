@@ -64,7 +64,34 @@ public class TaskController {
     public void alterTaskStatus(Task task) {
         task.setStatus(task.getStatus() == TaskStatus.DONE ? TaskStatus.PENDING : TaskStatus.DONE);
     }
+    public void addNewTagToTagList(String newTag){
+	taskTags.add(newTag);
+    }
 
+    public void deleteTagFromTagList(String tagToBeDeleted){
+	taskTags.removeIf(tag -> tag.equals(tagToBeDeleted));
+    }
+
+    public void editTagFromTagList(String oldTagName, String newTagName) {
+	taskTags = taskTags.stream()
+			.map(tag -> tag.equals(oldTagName) ? newTagName : tag)
+			.collect(Collectors.toSet());
+    }
+    public void addTagToTask(Task task, String newTag){
+        if (!taskTags.contains(newTag)) {
+            taskTags.add(newTag.toUpperCase());
+	}
+        task.getTags().add(newTag.toUpperCase());
+    }
+    public void deleteTagFromTask(Task task, String tagToDelete) {
+        task.getTags().removeIf(tag -> tag.equals(tagToDelete));
+    }
+    public void editTagFromTask(Task task, String oldTagName, String newTagName) {
+        task.setTags(task.getTags().stream()
+			.map(tag -> tag.equals(oldTagName) ? newTagName : tag)
+			.collect(Collectors.toSet()));
+    }
+    
     public void checkForExpiredTasks() {
         taskList.stream()
                 .filter(task -> task.getExpirationDate().isBefore(LocalDateTime.now()))
