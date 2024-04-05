@@ -13,7 +13,7 @@ public class Task {
     public LocalDateTime expirationDate;
     public TaskPriority priority;
     public TaskStatus status;
-    public List<String> tags; //TODO lista de utils.enums.TaskTag
+    public List<String> tags;
 
 
     // CONSTRUTOR COM PARÂMETRO DEFAULT CHAMA CONSTRUTOR PRINCIPAL
@@ -23,14 +23,13 @@ public class Task {
 
     // CONSTRUTOR COM PARÂMETROS OBRIGATÓRIOS
     public Task(UUID id, String title, String description, LocalDateTime expirationDate, TaskPriority priority, TaskStatus status, List<String> tags) {
-//        this.id = TaskController.generateUuid(null);
         this.id = id;
         this.title = title;
         this.description = description;
         this.expirationDate = expirationDate;
         this.priority = priority;
         this.status = status;
-        this.tags = tags; //TODO ajeitar o funcionamento das tags como enum
+        this.tags = tags;
     }
 
     // GETTERS AND SETTERS
