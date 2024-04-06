@@ -4,7 +4,7 @@ import models.Task;
 import utils.enums.TaskPriority;
 import utils.enums.TaskStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -31,12 +31,12 @@ public class TaskController {
 
     public void checkForExpiredTasks() {
         taskList.stream()
-                .filter(task -> task.getExpirationDate().isBefore(LocalDateTime.now()))
+                .filter(task -> task.getExpirationDate().isBefore(LocalDate.now()))
                 .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
     }
 
     //TODO instancia a task
-    public void addNewTask(String title, String description, LocalDateTime date, TaskPriority priority, TaskStatus status, String... tagNames){
+    public void addNewTask(String title, String description, LocalDate date, TaskPriority priority, TaskStatus status, String... tagNames){
         Set<String> tags = Arrays.stream(tagNames)
                 .map(String::toUpperCase)
                 .filter(tagName -> !taskTags.contains(tagName))
@@ -63,7 +63,7 @@ public class TaskController {
     }
 
     //TODO edita a data
-    public void editDate(Task task, LocalDateTime newDate) {
+    public void editDate(Task task, LocalDate newDate) {
         task.setExpirationDate(newDate);
         checkForExpiredTasks();
     }

@@ -2,7 +2,7 @@ package models;
 
 import utils.enums.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.UUID;
@@ -11,19 +11,19 @@ public class Task {
     public UUID id;
     public String title;
     public String description;
-    public LocalDateTime expirationDate;
+    public LocalDate expirationDate;
     public TaskPriority priority;
     public TaskStatus status;
     public Set<String> tags;
 
 
     // constructor with default parameter, calls main constructor. used when there's no UUID defined, generates random one
-    public Task(String title, String description, LocalDateTime creationDate, TaskPriority priority, TaskStatus status, Set<String> tags) {
+    public Task(String title, String description, LocalDate creationDate, TaskPriority priority, TaskStatus status, Set<String> tags) {
         this(UUID.randomUUID(), title, description, creationDate, priority, status, tags);
     }
 
     // main constructor, with required parameters. used to instantiate a Task with an existing UUID (read from csv)
-    public Task(UUID id, String title, String description, LocalDateTime expirationDate, TaskPriority priority, TaskStatus status, Set<String> tags) {
+    public Task(UUID id, String title, String description, LocalDate expirationDate, TaskPriority priority, TaskStatus status, Set<String> tags) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -58,11 +58,11 @@ public class Task {
         this.description = description;
     }
 
-    public LocalDateTime getExpirationDate() {
+    public LocalDate getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 
@@ -92,7 +92,7 @@ public class Task {
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy, HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy");
 
         return "ID: " + id + "\n" +
                 "Title: " + title + "\n" +
