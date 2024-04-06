@@ -91,7 +91,7 @@ public class TaskController {
     }
 
     // TODO edita tag na lista de todas as tags
-    public void editTagFromTagList(String oldTagName, String newTagName) {
+    public void editTag(String oldTagName, String newTagName) {
         taskTags = taskTags.stream()
                 .map(tag -> tag.equals(oldTagName) ? newTagName : tag)
                 .collect(Collectors.toSet());
@@ -108,13 +108,6 @@ public class TaskController {
     //TODO remove tag da lista de uma task específica
     public void deleteTagFromTask(Task task, String tagToDelete) {
         task.getTags().removeIf(tag -> tag.equals(tagToDelete));
-    }
-
-    //TODO edita tag na lista de uma task específica
-    public void editTagFromTask(Task task, String oldTagName, String newTagName) {
-        task.setTags(task.getTags().stream()
-			.map(tag -> tag.equals(oldTagName) ? newTagName : tag)
-			.collect(Collectors.toSet()));
     }
 
 
