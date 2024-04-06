@@ -92,7 +92,7 @@ public class Task {
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MM yyyy");
 
         return "ID: " + id + "\n" +
                 "Title: " + title + "\n" +
