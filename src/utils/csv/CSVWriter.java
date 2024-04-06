@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CSVWriter {
 
-    private static final String FILE_PATH = "tasks.csv";
+    private static final String FILE_PATH = "src/db/tasks.csv";
 
     public static void writeTasks(List<Task> tasks) {
         try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(FILE_PATH))) {
@@ -34,7 +34,7 @@ public class CSVWriter {
     }
 
     private static String taskToCSVLine(Task task) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy");
         String expirationDateFormatted = task.expirationDate.format(formatter);
         String tags = String.join(";", task.tags);
 
