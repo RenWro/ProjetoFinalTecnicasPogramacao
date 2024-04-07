@@ -11,16 +11,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-// TODO CONSERTAR ESSE READER
-
 public class CSVReader {
-
     private static final String FILE_PATH = "src/db/tasks.csv";
 
     public static void readTasks(TaskController taskController) {
@@ -44,6 +40,5 @@ public class CSVReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

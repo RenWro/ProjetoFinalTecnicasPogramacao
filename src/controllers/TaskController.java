@@ -1,6 +1,8 @@
 package controllers;
 
 import models.Task;
+import utils.csv.CSVReader;
+import utils.csv.CSVWriter;
 import utils.enums.TaskPriority;
 import utils.enums.TaskStatus;
 
@@ -19,7 +21,7 @@ public class TaskController {
 
     private List<Task> taskList;
     private Set<String> taskTags;
-    private final ScheduledExecutorService scheduler;
+    public final ScheduledExecutorService scheduler;
 
     public TaskController() {
         this.taskList = new ArrayList<>();
@@ -27,6 +29,7 @@ public class TaskController {
         this.scheduler = Executors.newScheduledThreadPool(1);
 
         scheduler.scheduleAtFixedRate(this::checkForExpiredTasks, 0, 15, TimeUnit.SECONDS);
+//        scheduler.scheduleAtFixedRate(CSVWriter::writeTasks(taskList), 0, 15, TimeUnit.SECONDS);
     }
 
     public void checkForExpiredTasks() {
@@ -35,7 +38,6 @@ public class TaskController {
                 .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
     }
 
-    //TODO instancia a task
     public void addNewTask(String title, String description, LocalDate date, TaskPriority priority, TaskStatus status, String... tagNames){
         Set<String> tags = Arrays.stream(tagNames)
                 .map(String::toUpperCase)
@@ -47,57 +49,56 @@ public class TaskController {
         taskList.add(task);
     }
 
-    //TODO exclui a task
     public void deleteTask(Task task){
         taskList.removeIf(t -> t.getId().equals(task.getId()));
     }
 
-    //TODO edita o título
     public void editTitle(Task task, String newTitle) {
         task.setTitle(newTitle);
     }
 
-    //TODO edita a descrição
     public void editDescription(Task task, String newDescription) {
         task.setDescription(newDescription);
     }
 
-    //TODO edita a data
     public void editDate(Task task, LocalDate newDate) {
         task.setExpirationDate(newDate);
         checkForExpiredTasks();
     }
 
-    //TODO edita a prioridade
     public void editPriority(Task task, TaskPriority newPriority) {
         task.setPriority(newPriority);
     }
 
-    //TODO edita o status
     public void alterTaskStatus(Task task) {
         task.setStatus(task.getStatus() == TaskStatus.DONE ? TaskStatus.PENDING : TaskStatus.DONE);
     }
 
 
     // tag methods
-    // TODO adiciona tag à lista de todas as tags
     public void addNewTagToTagList(String newTag){
         taskTags.add(newTag);
     }
 
-    // TODO remove tag da lista de todas as tags
     public void deleteTagFromTagList(String tagToBeDeleted){
 	    taskTags.removeIf(tag -> tag.equals(tagToBeDeleted));
     }
 
-    // TODO edita tag na lista de todas as tags
     public void editTag(String oldTagName, String newTagName) {
         taskTags = taskTags.stream()
                 .map(tag -> tag.equals(oldTagName) ? newTagName : tag)
                 .collect(Collectors.toSet());
+        taskList = taskList.stream()
+                .map(task -> task.getTags().contains(oldTagName) ? setTagValue(task, newTagName) : task)
+                .collect(Collectors.toList());
+
     }
 
-    //TODO adiciona tag à lista de uma task específica
+    private Task setTagValue(Task task, String newTagName){
+        task.getTags().add(newTagName);
+        return task;
+    }
+
     public void addTagToTask(Task task, String newTag){
         if (!taskTags.contains(newTag)) {
             taskTags.add(newTag.toUpperCase());
@@ -105,7 +106,6 @@ public class TaskController {
         task.getTags().add(newTag.toUpperCase());
     }
 
-    //TODO remove tag da lista de uma task específica
     public void deleteTagFromTask(Task task, String tagToDelete) {
         task.getTags().removeIf(tag -> tag.equals(tagToDelete));
     }
@@ -118,12 +118,10 @@ public class TaskController {
                 .forEach(System.out::println);
     }
 
-    //TODO lista de tarefas
     public List<Task> getTaskList() {
         return taskList;
     }
 
-    //TODO lista de tags
     public Set<String> getTaskTags() {
         return taskTags;
     }
