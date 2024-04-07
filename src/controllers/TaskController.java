@@ -21,15 +21,17 @@ public class TaskController {
 
     private List<Task> taskList;
     private Set<String> taskTags;
-    public final ScheduledExecutorService scheduler;
+    public ScheduledExecutorService schedulerCheckExpired;
+    public ScheduledExecutorService schedulerWriteCSV;
 
     public TaskController() {
         this.taskList = new ArrayList<>();
         this.taskTags = new HashSet<>();
-        this.scheduler = Executors.newScheduledThreadPool(1);
+        this.schedulerCheckExpired = Executors.newScheduledThreadPool(1);
+        this.schedulerWriteCSV = Executors.newScheduledThreadPool(1);
 
-        scheduler.scheduleAtFixedRate(this::checkForExpiredTasks, 0, 15, TimeUnit.SECONDS);
-//        scheduler.scheduleAtFixedRate(CSVWriter::writeTasks(taskList), 0, 15, TimeUnit.SECONDS);
+        schedulerCheckExpired.scheduleAtFixedRate(this::checkForExpiredTasks, 0, 15, TimeUnit.SECONDS);
+        schedulerWriteCSV.scheduleAtFixedRate(CSVWriter::writeTasks(taskList), 0, 15, TimeUnit.SECONDS);
     }
 
     public void checkForExpiredTasks() {
