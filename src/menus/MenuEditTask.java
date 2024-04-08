@@ -61,19 +61,23 @@ public class MenuEditTask {
             task.setDescription(description);
         }
 
-        LocalDate date = promptForDate("Enter the new expiration date (DD MM YYYY, leave blank to keep the current date): ", task.getExpirationDate());
+        LocalDate date = promptForDate(
+                "Enter the new expiration date (DD MM YYYY, leave blank to keep the current date): ", task.getExpirationDate());
         task.setExpirationDate(date);
 
-        TaskPriority priority = promptForEnum(TaskPriority.class, "Enter the new priority (HIGH, MEDIUM, LOW, leave blank to keep the current one): ", task.getPriority());
+        TaskPriority priority = promptForEnum(TaskPriority.class,
+                "Enter the new priority (HIGH, MEDIUM, LOW, leave blank to keep the current one): ", task.getPriority());
         task.setPriority(priority);
 
-        TaskStatus status = promptForEnum(TaskStatus.class, "Enter the new status (PENDING, DONE, OVERDUE, leave blank to keep the current): ", task.getStatus());
+        TaskStatus status = promptForEnum(TaskStatus.class,
+                "Enter the new status (PENDING, DONE, OVERDUE, leave blank to keep the current): ", task.getStatus());
         task.setStatus(status);
 
-        Set<String> tags = promptForTags("Enter the new tags (separated by comma, leave blank to keep the current ones): ", task.getTags());
+        Set<String> tags = promptForTags(
+                "Enter the new tags (separated by comma, leave blank to keep the current ones): ", task.getTags());
         task.setTags(tags);
 
-        taskController.updateTask(task); // Supondo que exista um método updateTask no TaskController
+        taskController.updateTask(task);
     }
 
     private String promptForInput(String prompt) {
