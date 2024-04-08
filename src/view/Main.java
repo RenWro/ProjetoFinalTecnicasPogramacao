@@ -91,7 +91,7 @@ public class Main {
         System.out.println("\nTASKS AFTER REMOVAL:");
         taskController.getTaskListAsString();
 
-        taskController.scheduler.shutdown();
+        taskController.stopScheduler();
 
     }
 }
