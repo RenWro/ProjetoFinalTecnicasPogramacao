@@ -30,8 +30,8 @@ public class TaskController {
         this.schedulerCheckExpired = Executors.newScheduledThreadPool(1);
         this.schedulerWriteCSV = Executors.newScheduledThreadPool(1);
 
-        schedulerCheckExpired.scheduleAtFixedRate(this::checkForExpiredTasks, 0, 15, TimeUnit.SECONDS);
-        schedulerWriteCSV.scheduleAtFixedRate(CSVWriter::writeTasks(taskList), 0, 15, TimeUnit.SECONDS);
+        schedulerCheckExpired.scheduleAtFixedRate(this::checkForExpiredTasks, 1, 15, TimeUnit.SECONDS);
+        schedulerWriteCSV.scheduleAtFixedRate(() -> CSVWriter.writeTasks(taskList), 1, 16, TimeUnit.SECONDS);
     }
 
     public void checkForExpiredTasks() {
@@ -39,6 +39,31 @@ public class TaskController {
                 .filter(task -> task.getExpirationDate().isBefore(LocalDate.now()))
                 .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
     }
+
+    public void stopScheduler() {
+
+        schedulerCheckExpired.shutdown();
+        schedulerWriteCSV.shutdown();
+
+        try {
+
+            if (!schedulerCheckExpired.awaitTermination(60, TimeUnit.SECONDS)) {
+                schedulerCheckExpired.shutdownNow();
+            }
+
+            if (!schedulerWriteCSV.awaitTermination(60, TimeUnit.SECONDS)) {
+                schedulerWriteCSV.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+
+            schedulerCheckExpired.shutdownNow();
+            schedulerWriteCSV.shutdownNow();
+
+            Thread.currentThread().interrupt();
+        }
+    }
+
+
 
     public void addNewTask(String title, String description, LocalDate date, TaskPriority priority, TaskStatus status, String... tagNames){
         Set<String> tags = Arrays.stream(tagNames)
@@ -126,5 +151,11 @@ public class TaskController {
 
     public Set<String> getTaskTags() {
         return taskTags;
+    }
+
+    // setters
+
+    public void setTaskTags(Set<String> taskTags) {
+        this.taskTags = taskTags;
     }
 }
