@@ -74,10 +74,12 @@ public class TaskController {
 
         Task task = new Task(title, description, date, priority, status, tags);
         taskList.add(task);
+        CSVWriter.writeTasks(taskList);
     }
 
     public void deleteTask(Task task){
         taskList.removeIf(t -> t.getId().equals(task.getId()));
+        CSVWriter.writeTasks(taskList);
     }
 
     public void editTitle(Task task, String newTitle) {
@@ -158,4 +160,27 @@ public class TaskController {
     public void setTaskTags(Set<String> taskTags) {
         this.taskTags = taskTags;
     }
+
+    public void shutdown() {
+        shutdownExecutorService(schedulerCheckExpired);
+        shutdownExecutorService(schedulerWriteCSV);
+    }
+
+    private void shutdownExecutorService(ScheduledExecutorService executor) {
+        if (executor != null) {
+            executor.shutdown();
+            try {
+                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                    executor.shutdownNow();
+                    if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                        System.err.println("Executor service did not terminate");
+                    }
+                }
+            } catch (InterruptedException ie) {
+                executor.shutdownNow();
+                Thread.currentThread().interrupt();  // Preserve interrupt status
+            }
+        }
+    }
+
 }
