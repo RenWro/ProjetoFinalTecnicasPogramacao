@@ -37,6 +37,12 @@ public class CSVReader {
                     .collect(Collectors.toList());
 
             taskController.getTaskList().addAll(tasks);
+            Set<String> allTags = taskController.getTaskList()
+                    .stream()
+                    .flatMap(task -> task.getTags().stream())
+                    .collect(Collectors.toSet());
+
+            taskController.setTaskTags(allTags);
         } catch (IOException e) {
             e.printStackTrace();
         }
