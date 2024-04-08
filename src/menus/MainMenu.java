@@ -22,39 +22,33 @@ public class MainMenu {
     }
 
     public void displayMenu() {
-        try {
-            while (true) {
-                listTasks();
+        while (true) {
+            listTasks();
+            System.out.println("\nTodo List Application");
+            System.out.println("1. Add Task");
+            System.out.println("2. Edit Task");
+            System.out.println("3. Delete Task");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
 
-                System.out.println("\nTodo List Application");
-                System.out.println("1. Add Task");
-                System.out.println("2. Edit Task");
-                System.out.println("3. Delete Task");
-                System.out.println("4. Exit");
-                System.out.print("Choose an option: ");
-                String choice = scanner.nextLine();
-
-                switch (choice) {
-                    case "1":
-                        addTask();
-                        break;
-                    case "2":
-                        editTask();
-                        break;
-                    case "3":
-                        deleteTask();
-                        break;
-                    case "4":
-                        System.out.println("Saindo...");
-                        //taskController.shutdown();
-                        return;
-                    default:
-                        System.out.println("Opção inválida, tente novamente.");
-                }
+            switch (choice) {
+                case "1":
+                    addTask();
+                    break;
+                case "2":
+                    editTask();
+                    break;
+                case "3":
+                    deleteTask();
+                    break;
+                case "4":
+                    System.out.println("Exiting...");
+                    taskController.shutdown();
+                    return;
+                default:
+                    System.out.println("Invalid option, please try again.");
             }
-        } finally {
-            scanner.close();
-            taskController.shutdown();
         }
     }
 
@@ -69,36 +63,32 @@ public class MainMenu {
     }
 
     private Task selectTaskToDelete() {
-        System.out.println("Digite o UUID da tarefa que deseja deletar:");
+        System.out.println("Enter the UUID of the task you want to delete:");
         String uuidInput = scanner.nextLine();
         try {
             UUID taskUUID = UUID.fromString(uuidInput);
-            for (Task task : taskController.getTaskList()) {
-                if (task.getId().equals(taskUUID)) {
-                    return task;
-                }
-            }
-            System.out.println("Tarefa não encontrada.");
+            return taskController.getTaskList().stream()
+                    .filter(task -> task.getId().equals(taskUUID))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Task not found"));
         } catch (IllegalArgumentException e) {
-            System.out.println("UUID inválido.");
+            System.out.println(e.getMessage());
+            return null;
         }
-        return null;
     }
 
     private void deleteTask() {
         Task taskToDelete = selectTaskToDelete();
         if (taskToDelete != null) {
             taskController.deleteTask(taskToDelete);
-            System.out.println("Tarefa deletada com sucesso.");
+            System.out.println("Task deleted successfully.");
         }
     }
 
     public static void main(String[] args) {
         TaskController taskController = new TaskController();
         CSVReader.readTasks(taskController);
-
         MainMenu menu = new MainMenu(taskController);
         menu.displayMenu();
     }
-
 }

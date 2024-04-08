@@ -9,9 +9,11 @@ import utils.enums.TaskStatus;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MenuAddTask {
     private Scanner scanner;
@@ -22,63 +24,71 @@ public class MenuAddTask {
         this.taskController = taskController;
     }
 
-    private TaskPriority getValidPriority() {
-        while (true) {
-            System.out.print("Digite a prioridade (HIGH, MEDIUM, LOW): ");
-            try {
-                String input = scanner.nextLine().toUpperCase();
-                return TaskPriority.valueOf(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Prioridade inválida, tente novamente.");
-            }
-        }
-    }
-
-    private TaskStatus getValidStatus() {
-        while (true) {
-            System.out.print("Digite o status (PENDING, DONE, OVERDUE): ");
-            try {
-                String input = scanner.nextLine().toUpperCase();
-                return TaskStatus.valueOf(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Status inválido, tente novamente.");
-            }
-        }
-    }
-
     public void adicionarTarefa() {
-        System.out.print("Digite o título da tarefa: ");
-        String title = scanner.nextLine();
+        String title = promptForInput("Enter the task title:");
+        String description = promptForInput("Enter the task description:");
+        LocalDate expirationDate = promptForDate();
+        TaskPriority priority = getValidEnumValue(TaskPriority.class, "Enter the priority (HIGH, MEDIUM, LOW):");
+        TaskStatus status = getValidEnumValue(TaskStatus.class, "Enter status (PENDING, DONE, OVERDUE):");
+        Set<String> tags = promptForTags();
 
-        System.out.print("Digite a descrição da tarefa: ");
-        String description = scanner.nextLine();
+        taskController.addNewTask(title, description, expirationDate, priority, status, String.valueOf(tags));
+        System.out.println("New task added successfully.");
+    }
 
-        LocalDate expirationDate = null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy"); // Define o padrão para o formato de data
-        while (expirationDate == null) {
-            System.out.print("Digite a data de validade (formato DD MM AAAA): "); // Mudança na mensagem para corresponder ao formato
+    private String promptForInput(String prompt) {
+        String input = null;
+        while (input == null || input.trim().isEmpty()) {
+            System.out.print(prompt);
+            input = scanner.nextLine();
+            if (input.trim().isEmpty()) {
+                System.out.println("Input cannot be empty. Please try again.");
+            }
+        }
+        return input;
+    }
+
+    private LocalDate promptForDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy");
+        LocalDate date = null;
+        while (date == null) {
+            System.out.print("Enter the expiration date (DD MM YYYY format):");
             String dateInput = scanner.nextLine();
             try {
-                expirationDate = LocalDate.parse(dateInput, formatter); // Usa o formatter para analisar a data
+                LocalDate parsedDate = LocalDate.parse(dateInput, formatter);
+                if (parsedDate.isBefore(LocalDate.now())) {
+                    System.out.println("The date must be from today. Try again.");
+                    date = null;
+                } else {
+                    date = parsedDate;
+                }
             } catch (DateTimeParseException e) {
-                System.out.println("Data inválida, tente novamente.");
+                System.out.println("Invalid date, please try again.");
+                date = null;
             }
         }
+        return date;
+    }
 
-        TaskPriority priority = getValidPriority();
-        TaskStatus status = getValidStatus();
+        private <T extends Enum<T>> T getValidEnumValue(Class<T> enumClass, String prompt) {
+        T result = null;
+        while (result == null) {
+            System.out.print(prompt);
+            try {
+                result = Enum.valueOf(enumClass, scanner.nextLine().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid value, please try again.");
+            }
+        }
+        return result;
+    }
 
-        Set<String> tags = new HashSet<>();
-        System.out.print("Digite as tags, separadas por vírgula: ");
+    private Set<String> promptForTags() {
+        System.out.print("Enter the tags, separated by a comma:");
         String tagsInput = scanner.nextLine();
-        if (!tagsInput.isEmpty()) {
-            String[] tagsArray = tagsInput.split(",");
-            for (String tag : tagsArray) {
-                tags.add(tag.trim());
-            }
-        }
-
-        taskController.addNewTask(title, description, expirationDate, priority, status, tags.toArray(new String[0]));
-        System.out.println("Nova tarefa adicionada com sucesso.");
+        return Arrays.stream(tagsInput.split(","))
+                .filter(tag -> !tag.isEmpty())
+                .map(String::trim)
+                .collect(Collectors.toSet());
     }
 }

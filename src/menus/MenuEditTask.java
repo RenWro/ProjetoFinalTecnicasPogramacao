@@ -25,82 +25,95 @@ public class MenuEditTask {
     public void execute() {
         Task taskToEdit = selectTaskToEdit();
         if (taskToEdit != null) {
-            // Prossiga com a edição da tarefa
             editTask(taskToEdit);
         }
     }
 
     private Task selectTaskToEdit() {
-        System.out.println("Digite o UUID da tarefa que deseja editar:");
-        String uuidInput = scanner.nextLine();
+        UUID taskUUID = promptForUUID("Enter the UUID of the task you want to edit:");
+        return taskController.getTaskList().stream()
+                .filter(task -> task.getId().equals(taskUUID))
+                .findFirst()
+                .orElseGet(() -> {
+                    System.out.println("Task not found.");
+                    return null;
+                });
+    }
+
+    private UUID promptForUUID(String prompt) {
+        System.out.println(prompt);
         try {
-            UUID taskUUID = UUID.fromString(uuidInput);
-            for (Task task : taskController.getTaskList()) {
-                if (task.getId().equals(taskUUID)) {
-                    return task;
-                }
-            }
-            System.out.println("Tarefa não encontrada.");
+            return UUID.fromString(scanner.nextLine());
         } catch (IllegalArgumentException e) {
-            System.out.println("UUID inválido.");
+            System.out.println("Invalid UUID.");
+            return null;
         }
-        return null;
     }
 
     public void editTask(Task task) {
-        System.out.println("Editando tarefa: " + task.getTitle());
-
-        System.out.print("Digite o novo título da tarefa (deixe em branco para manter o atual): ");
-        String title = scanner.nextLine();
-        if (!title.isBlank()) {
+        String title = promptForInput("Enter the new task title (leave blank to keep the current one): ");
+        if (!title.isEmpty()) {
             task.setTitle(title);
         }
 
-        System.out.print("Digite a nova descrição da tarefa (deixe em branco para manter a atual): ");
-        String description = scanner.nextLine();
-        if (!description.isBlank()) {
+        String description = promptForInput("Enter the new task description (leave blank to keep the current one): ");
+        if (!description.isEmpty()) {
             task.setDescription(description);
         }
 
-        System.out.print("Digite a nova data de validade (DD MM AAAA, deixe em branco para manter a atual): ");
-        String dateInput = scanner.nextLine();
-        if (!dateInput.isBlank()) {
-            try {
-                LocalDate newDate = LocalDate.parse(dateInput, dateFormatter);
-                task.setExpirationDate(newDate);
-            } catch (DateTimeParseException e) {
-                System.out.println("Data inválida. Mantendo a data anterior.");
-            }
-        }
+        LocalDate date = promptForDate("Enter the new expiration date (DD MM YYYY, leave blank to keep the current date): ", task.getExpirationDate());
+        task.setExpirationDate(date);
 
-        System.out.print("Digite a nova prioridade (HIGH, MEDIUM, LOW, deixe em branco para manter a atual): ");
-        String priorityInput = scanner.nextLine();
-        if (!priorityInput.isBlank()) {
-            try {
-                TaskPriority newPriority = TaskPriority.valueOf(priorityInput.toUpperCase());
-                task.setPriority(newPriority);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Prioridade inválida. Mantendo a prioridade anterior.");
-            }
-        }
+        TaskPriority priority = promptForEnum(TaskPriority.class, "Enter the new priority (HIGH, MEDIUM, LOW, leave blank to keep the current one): ", task.getPriority());
+        task.setPriority(priority);
 
-        System.out.print("Digite o novo status (PENDING, DONE, OVERDUE, deixe em branco para manter o atual): ");
-        String statusInput = scanner.nextLine();
-        if (!statusInput.isBlank()) {
-            try {
-                TaskStatus newStatus = TaskStatus.valueOf(statusInput.toUpperCase());
-                task.setStatus(newStatus);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Status inválido. Mantendo o status anterior.");
-            }
-        }
+        TaskStatus status = promptForEnum(TaskStatus.class, "Enter the new status (PENDING, DONE, OVERDUE, leave blank to keep the current): ", task.getStatus());
+        task.setStatus(status);
 
-        System.out.print("Digite as novas tags (separadas por vírgula, deixe em branco para manter as atuais): ");
-        String tagsInput = scanner.nextLine();
-        if (!tagsInput.isBlank()) {
-            Set<String> newTags = new HashSet<>(Arrays.asList(tagsInput.split(",")));
-            task.setTags(newTags.stream().map(String::trim).collect(Collectors.toSet()));
+        Set<String> tags = promptForTags("Enter the new tags (separated by comma, leave blank to keep the current ones): ", task.getTags());
+        task.setTags(tags);
+
+        taskController.updateTask(task); // Supondo que exista um método updateTask no TaskController
+    }
+
+    private String promptForInput(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine().trim();
+    }
+
+    private LocalDate promptForDate(String prompt, LocalDate current) {
+        System.out.print(prompt);
+        String input = scanner.nextLine().trim();
+        if (input.isEmpty()) return current;
+
+        try {
+            return LocalDate.parse(input, dateFormatter);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format. Keeping the old one.");
+            return current;
         }
-        CSVWriter.writeTasks(taskController.getTaskList());
+    }
+
+    private <T extends Enum<T>> T promptForEnum(Class<T> enumType, String prompt, T current) {
+        System.out.print(prompt);
+        String input = scanner.nextLine().trim().toUpperCase();
+        if (input.isEmpty()) return current;
+
+        try {
+            return Enum.valueOf(enumType, input);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid input. Maintaining previous " + enumType.getSimpleName() + ".");
+            return current;
+        }
+    }
+
+    private Set<String> promptForTags(String prompt, Set<String> current) {
+        System.out.print(prompt);
+        String input = scanner.nextLine().trim();
+        if (input.isEmpty()) return current;
+
+        return Arrays.stream(input.split(","))
+                .map(String::trim)
+                .collect(Collectors.toSet());
     }
 }

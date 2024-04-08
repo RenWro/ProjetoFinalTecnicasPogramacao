@@ -161,6 +161,17 @@ public class TaskController {
         this.taskTags = taskTags;
     }
 
+    public void updateTask(Task updatedTask) {
+        for (int i = 0; i < taskList.size(); i++) {
+            Task task = taskList.get(i);
+            if (task.getId().equals(updatedTask.getId())) {
+                taskList.set(i, updatedTask);
+                CSVWriter.writeTasks(taskList);
+                break;
+            }
+        }
+    }
+
     public void shutdown() {
         shutdownExecutorService(schedulerCheckExpired);
         shutdownExecutorService(schedulerWriteCSV);
@@ -178,7 +189,7 @@ public class TaskController {
                 }
             } catch (InterruptedException ie) {
                 executor.shutdownNow();
-                Thread.currentThread().interrupt();  // Preserve interrupt status
+                Thread.currentThread().interrupt();
             }
         }
     }
