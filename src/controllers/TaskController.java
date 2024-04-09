@@ -173,6 +173,7 @@ public class TaskController {
     }
 
     public void shutdown() {
+        stopScheduler();
         shutdownExecutorService(schedulerCheckExpired);
         shutdownExecutorService(schedulerWriteCSV);
     }
