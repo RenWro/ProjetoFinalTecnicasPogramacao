@@ -4,6 +4,7 @@ import controllers.TaskController;
 import models.Task;
 import utils.csv.CSVReader;
 
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -14,6 +15,13 @@ public class MainMenu {
     public MainMenu(TaskController taskController) {
         this.scanner = new Scanner(System.in);
         this.taskController = taskController;
+    }
+
+    public static void main(String[] args) {
+        TaskController taskController = new TaskController();
+        CSVReader.readTasks(taskController);
+        MainMenu menu = new MainMenu(taskController);
+        menu.displayMenu();
     }
 
     public void listTasks() {
@@ -44,7 +52,7 @@ public class MainMenu {
                     break;
                 case "4":
                     System.out.println("Exiting...");
-                    taskController.shutdown();
+                    taskController.stopScheduler();
                     return;
                 default:
                     System.out.println("Invalid option, please try again.");
@@ -62,33 +70,17 @@ public class MainMenu {
         menuEditTask.execute();
     }
 
-    private Task selectTaskToDelete() {
-        System.out.println("Enter the UUID of the task you want to delete:");
-        String uuidInput = scanner.nextLine();
-        try {
-            UUID taskUUID = UUID.fromString(uuidInput);
-            return taskController.getTaskList().stream()
-                    .filter(task -> task.getId().equals(taskUUID))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Task not found"));
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
+    private void deleteTask(){
+        System.out.print("Enter the UUID of the task you want to delete: ");
+        UUID taskUUID = UUID.fromString(scanner.nextLine());
 
-    private void deleteTask() {
-        Task taskToDelete = selectTaskToDelete();
-        if (taskToDelete != null) {
-            taskController.deleteTask(taskToDelete);
-            System.out.println("Task deleted successfully.");
-        }
-    }
+        taskController.getTaskList().stream()
+                .filter(task -> Objects.equals(task.getId(), taskUUID))
+                .findAny()
+                .ifPresentOrElse(task -> {
+                    taskController.deleteTask(task);
+                    System.out.println("Task deleted successfully.");
+                }, () -> System.out.println("Task not found."));
 
-    public static void main(String[] args) {
-        TaskController taskController = new TaskController();
-        CSVReader.readTasks(taskController);
-        MainMenu menu = new MainMenu(taskController);
-        menu.displayMenu();
     }
 }
