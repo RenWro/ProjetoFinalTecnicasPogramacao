@@ -30,9 +30,8 @@ public class MenuAddTask {
         LocalDate expirationDate = promptForDate();
         TaskPriority priority = getValidEnumValue(TaskPriority.class, "Enter the priority (HIGH, MEDIUM, LOW):");
         TaskStatus status = getValidEnumValue(TaskStatus.class, "Enter status (PENDING, DONE, OVERDUE):");
-        Set<String> tags = promptForTags();
 
-        taskController.addNewTask(title, description, expirationDate, priority, status, String.valueOf(tags));
+        taskController.addNewTask(title, description, expirationDate, priority, status);
         System.out.println("New task added successfully.");
     }
 
@@ -81,14 +80,5 @@ public class MenuAddTask {
             }
         }
         return result;
-    }
-
-    private Set<String> promptForTags() {
-        System.out.print("Enter the tags, separated by a comma:");
-        String tagsInput = scanner.nextLine();
-        return Arrays.stream(tagsInput.split(","))
-                .filter(tag -> !tag.isEmpty())
-                .map(String::trim)
-                .collect(Collectors.toSet());
     }
 }
