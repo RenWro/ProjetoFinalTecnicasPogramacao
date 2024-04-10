@@ -14,32 +14,26 @@ public class Task {
     public LocalDate expirationDate;
     public TaskPriority priority;
     public TaskStatus status;
-    public Set<String> tags;
 
 
     // constructor with default parameter, calls main constructor. used when there's no UUID defined, generates random one
-    public Task(String title, String description, LocalDate creationDate, TaskPriority priority, TaskStatus status, Set<String> tags) {
-        this(UUID.randomUUID(), title, description, creationDate, priority, status, tags);
+    public Task(String title, String description, LocalDate creationDate, TaskPriority priority, TaskStatus status) {
+        this(UUID.randomUUID(), title, description, creationDate, priority, status);
     }
 
     // main constructor, with required parameters. used to instantiate a Task with an existing UUID (read from csv)
-    public Task(UUID id, String title, String description, LocalDate expirationDate, TaskPriority priority, TaskStatus status, Set<String> tags) {
+    public Task(UUID id, String title, String description, LocalDate expirationDate, TaskPriority priority, TaskStatus status) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.expirationDate = expirationDate;
         this.priority = priority;
         this.status = status;
-        this.tags = tags;
     }
 
     // GETTERS AND SETTERS
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id){
-        this.id = id;
     }
 
     public String getTitle() {
@@ -82,14 +76,6 @@ public class Task {
         this.status = status;
     }
 
-    public Set<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<String> tags) {
-        this.tags = tags;
-    }
-
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MM yyyy");
@@ -99,7 +85,6 @@ public class Task {
                 "Description: " + description + "\n" +
                 "Expiration Date: " + expirationDate.format(formatter) + "\n" +
                 "Priority: " + priority + "\n" +
-                "Status: " + status + "\n" +
-                "Tags: " + tags + "\n";
+                "Status: " + status + "\n";
     }
 }
