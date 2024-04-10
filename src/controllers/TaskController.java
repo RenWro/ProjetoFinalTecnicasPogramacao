@@ -20,13 +20,11 @@ import java.util.stream.Collectors;
 public class TaskController {
 
     private List<Task> taskList;
-    private Set<String> taskTags;
     public ScheduledExecutorService schedulerCheckExpired;
     public ScheduledExecutorService schedulerWriteCSV;
 
     public TaskController() {
         this.taskList = new ArrayList<>();
-        this.taskTags = new HashSet<>();
         this.schedulerCheckExpired = Executors.newScheduledThreadPool(1);
         this.schedulerWriteCSV = Executors.newScheduledThreadPool(1);
 
@@ -65,16 +63,9 @@ public class TaskController {
 
 
 
-    public void addNewTask(String title, String description, LocalDate date, TaskPriority priority, TaskStatus status, String... tagNames){
-        Set<String> tags = Arrays.stream(tagNames)
-                .map(String::toUpperCase)
-                .filter(tagName -> !taskTags.contains(tagName))
-                .peek(taskTags::add)
-                .collect(Collectors.toCollection(HashSet::new));
-
-        Task task = new Task(title, description, date, priority, status, tags);
+    public void addNewTask(String title, String description, LocalDate date, TaskPriority priority, TaskStatus status){
+        Task task = new Task(title, description, date, priority, status);
         taskList.add(task);
-        CSVWriter.writeTasks(taskList);
     }
 
     public void deleteTask(Task task){
@@ -103,43 +94,6 @@ public class TaskController {
         task.setStatus(task.getStatus() == TaskStatus.DONE ? TaskStatus.PENDING : TaskStatus.DONE);
     }
 
-
-    // tag methods
-    public void addNewTagToTagList(String newTag){
-        taskTags.add(newTag);
-    }
-
-    public void deleteTagFromTagList(String tagToBeDeleted){
-	    taskTags.removeIf(tag -> tag.equals(tagToBeDeleted));
-    }
-
-    public void editTag(String oldTagName, String newTagName) {
-        taskTags = taskTags.stream()
-                .map(tag -> tag.equals(oldTagName) ? newTagName : tag)
-                .collect(Collectors.toSet());
-        taskList = taskList.stream()
-                .map(task -> task.getTags().contains(oldTagName) ? setTagValue(task, newTagName) : task)
-                .collect(Collectors.toList());
-
-    }
-
-    private Task setTagValue(Task task, String newTagName){
-        task.getTags().add(newTagName);
-        return task;
-    }
-
-    public void addTagToTask(Task task, String newTag){
-        if (!taskTags.contains(newTag)) {
-            taskTags.add(newTag.toUpperCase());
-	}
-        task.getTags().add(newTag.toUpperCase());
-    }
-
-    public void deleteTagFromTask(Task task, String tagToDelete) {
-        task.getTags().removeIf(tag -> tag.equals(tagToDelete));
-    }
-
-
     // getters
     public void getTaskListAsString() {
         taskList.stream()
@@ -149,16 +103,6 @@ public class TaskController {
 
     public List<Task> getTaskList() {
         return taskList;
-    }
-
-    public Set<String> getTaskTags() {
-        return taskTags;
-    }
-
-    // setters
-
-    public void setTaskTags(Set<String> taskTags) {
-        this.taskTags = taskTags;
     }
 
     public void updateTask(Task updatedTask) {
@@ -171,28 +115,4 @@ public class TaskController {
             }
         }
     }
-
-    public void shutdown() {
-        stopScheduler();
-        shutdownExecutorService(schedulerCheckExpired);
-        shutdownExecutorService(schedulerWriteCSV);
-    }
-
-    private void shutdownExecutorService(ScheduledExecutorService executor) {
-        if (executor != null) {
-            executor.shutdown();
-            try {
-                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    executor.shutdownNow();
-                    if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                        System.err.println("Executor service did not terminate");
-                    }
-                }
-            } catch (InterruptedException ie) {
-                executor.shutdownNow();
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
 }
