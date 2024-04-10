@@ -45,7 +45,7 @@ public class CSVWriter {
                 expirationDateFormatted,
                 task.priority.toString(),
                 task.status.toString(),
-                "\"" + tags + "\""
+                tags
         );
 
     }
