@@ -73,10 +73,6 @@ public class MenuEditTask {
                 "Enter the new status (PENDING, DONE, OVERDUE, leave blank to keep the current): ", task.getStatus());
         task.setStatus(status);
 
-        Set<String> tags = promptForTags(
-                "Enter the new tags (separated by comma, leave blank to keep the current ones): ", task.getTags());
-        task.setTags(tags);
-
         taskController.updateTask(task);
     }
 
@@ -109,15 +105,5 @@ public class MenuEditTask {
             System.out.println("Invalid input. Maintaining previous " + enumType.getSimpleName() + ".");
             return current;
         }
-    }
-
-    private Set<String> promptForTags(String prompt, Set<String> current) {
-        System.out.print(prompt);
-        String input = scanner.nextLine().trim();
-        if (input.isEmpty()) return current;
-
-        return Arrays.stream(input.split(","))
-                .map(String::trim)
-                .collect(Collectors.toSet());
     }
 }
