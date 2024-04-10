@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,18 +30,13 @@ public class CSVReader {
                             data[2].trim(),
                             LocalDate.parse(data[3].trim(), formatter),
                             TaskPriority.valueOf(data[4].trim().toUpperCase()),
-                            TaskStatus.valueOf(data[5].trim().toUpperCase()),
-                            Set.of(data[6].split(";"))
+                            TaskStatus.valueOf(data[5].trim().toUpperCase())
+
                     ))
                     .collect(Collectors.toList());
 
             taskController.getTaskList().addAll(tasks);
-            Set<String> allTags = taskController.getTaskList()
-                    .stream()
-                    .flatMap(task -> task.getTags().stream())
-                    .collect(Collectors.toSet());
 
-            taskController.setTaskTags(allTags);
         } catch (IOException e) {
             e.printStackTrace();
         }

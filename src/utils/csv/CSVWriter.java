@@ -36,7 +36,6 @@ public class CSVWriter {
     private static String taskToCSVLine(Task task) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy");
         String expirationDateFormatted = task.expirationDate.format(formatter);
-        String tags = String.join(";", task.tags);
 
         return String.join(",",
                 String.valueOf(task.id),
@@ -44,8 +43,7 @@ public class CSVWriter {
                 task.description.replace(",", ";"),
                 expirationDateFormatted,
                 task.priority.toString(),
-                task.status.toString(),
-                tags
+                task.status.toString()
         );
 
     }
