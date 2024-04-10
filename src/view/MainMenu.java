@@ -1,8 +1,8 @@
-package menus;
+package view;
 
 import controllers.TaskController;
-import models.Task;
 import utils.csv.CSVReader;
+import utils.csv.CSVWriter;
 
 import java.util.Objects;
 import java.util.Scanner;
@@ -25,14 +25,15 @@ public class MainMenu {
     }
 
     public void listTasks() {
-        System.out.println("### Task List ###");
+        System.out.println("\n### Task List ###");
         taskController.getTaskListAsString();
     }
 
     public void displayMenu() {
-        while (true) {
+        boolean exit = false;
+        while (!exit) {
             listTasks();
-            System.out.println("\nTodo List Application");
+            System.out.println("\nTo-do List Application");
             System.out.println("1. Add Task");
             System.out.println("2. Edit Task");
             System.out.println("3. Delete Task");
@@ -52,8 +53,10 @@ public class MainMenu {
                     break;
                 case "4":
                     System.out.println("Exiting...");
+                    CSVWriter.writeTasks(taskController.getTaskList());
                     taskController.stopScheduler();
-                    return;
+                    exit = true;
+                    break;
                 default:
                     System.out.println("Invalid option, please try again.");
             }
@@ -62,7 +65,7 @@ public class MainMenu {
 
     private void addTask() {
         MenuAddTask menuAddTask = new MenuAddTask(taskController);
-        menuAddTask.adicionarTarefa();
+        menuAddTask.addTask();
     }
 
     private void editTask() {
@@ -81,6 +84,5 @@ public class MainMenu {
                     taskController.deleteTask(task);
                     System.out.println("Task deleted successfully.");
                 }, () -> System.out.println("Task not found."));
-
     }
 }

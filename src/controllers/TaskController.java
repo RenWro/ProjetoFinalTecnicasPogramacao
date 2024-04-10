@@ -1,7 +1,6 @@
 package controllers;
 
 import models.Task;
-import utils.csv.CSVReader;
 import utils.csv.CSVWriter;
 import utils.enums.TaskPriority;
 import utils.enums.TaskStatus;
@@ -9,13 +8,9 @@ import utils.enums.TaskStatus;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class TaskController {
 
@@ -34,7 +29,7 @@ public class TaskController {
 
     public void checkForExpiredTasks() {
         taskList.stream()
-                .filter(task -> task.getExpirationDate().isBefore(LocalDate.now()))
+                .filter(task -> !task.getStatus().equals(TaskStatus.DONE) && task.getExpirationDate().isBefore(LocalDate.now()))
                 .forEach(task -> task.setStatus(TaskStatus.OVERDUE));
     }
 
@@ -62,15 +57,13 @@ public class TaskController {
     }
 
 
-
     public void addNewTask(String title, String description, LocalDate date, TaskPriority priority, TaskStatus status){
         Task task = new Task(title, description, date, priority, status);
         taskList.add(task);
     }
 
     public void deleteTask(Task task){
-        taskList.removeIf(t -> t.getId().equals(task.getId()));
-        CSVWriter.writeTasks(taskList);
+        taskList.removeIf(t -> t.getId().equals(task.getId()));;
     }
 
     public void editTitle(Task task, String newTitle) {
@@ -94,6 +87,7 @@ public class TaskController {
         task.setStatus(task.getStatus() == TaskStatus.DONE ? TaskStatus.PENDING : TaskStatus.DONE);
     }
 
+
     // getters
     public void getTaskListAsString() {
         taskList.stream()
@@ -103,16 +97,5 @@ public class TaskController {
 
     public List<Task> getTaskList() {
         return taskList;
-    }
-
-    public void updateTask(Task updatedTask) {
-        for (int i = 0; i < taskList.size(); i++) {
-            Task task = taskList.get(i);
-            if (task.getId().equals(updatedTask.getId())) {
-                taskList.set(i, updatedTask);
-                CSVWriter.writeTasks(taskList);
-                break;
-            }
-        }
     }
 }

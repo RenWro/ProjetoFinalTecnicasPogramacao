@@ -1,4 +1,4 @@
-package menus;
+package view;
 
 import controllers.TaskController;
 import utils.csv.CSVReader;
@@ -24,15 +24,16 @@ public class MenuAddTask {
         this.taskController = taskController;
     }
 
-    public void adicionarTarefa() {
-        String title = promptForInput("Enter the task title:");
-        String description = promptForInput("Enter the task description:");
+    public void addTask() {
+        String title = promptForInput("Enter the task title: ");
+        String description = promptForInput("Enter the task description: ");
         LocalDate expirationDate = promptForDate();
-        TaskPriority priority = getValidEnumValue(TaskPriority.class, "Enter the priority (HIGH, MEDIUM, LOW):");
-        TaskStatus status = getValidEnumValue(TaskStatus.class, "Enter status (PENDING, DONE, OVERDUE):");
+        TaskPriority priority = getValidEnumValue(TaskPriority.class, "Enter the priority (HIGH, MEDIUM, LOW): ");
+        TaskStatus status = getValidEnumValue(TaskStatus.class, "Enter status (PENDING, DONE, OVERDUE): ");
 
         taskController.addNewTask(title, description, expirationDate, priority, status);
         System.out.println("New task added successfully.");
+
     }
 
     private String promptForInput(String prompt) {
@@ -55,12 +56,7 @@ public class MenuAddTask {
             String dateInput = scanner.nextLine();
             try {
                 LocalDate parsedDate = LocalDate.parse(dateInput, formatter);
-                if (parsedDate.isBefore(LocalDate.now())) {
-                    System.out.println("The date must be from today. Try again.");
-                    date = null;
-                } else {
-                    date = parsedDate;
-                }
+                date = parsedDate;
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date, please try again.");
                 date = null;
@@ -69,7 +65,7 @@ public class MenuAddTask {
         return date;
     }
 
-        private <T extends Enum<T>> T getValidEnumValue(Class<T> enumClass, String prompt) {
+    private <T extends Enum<T>> T getValidEnumValue(Class<T> enumClass, String prompt) {
         T result = null;
         while (result == null) {
             System.out.print(prompt);
