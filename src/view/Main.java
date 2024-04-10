@@ -6,7 +6,6 @@ import utils.csv.CSVReader;
 import utils.enums.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
@@ -17,8 +16,8 @@ public class Main {
         CSVReader.readTasks(taskController);
 
         // adding a few tasks
-        taskController.addNewTask("Cleaning", "Tidy up bedroom", LocalDate.now().plusDays(1), TaskPriority.LOW, TaskStatus.PENDING, "home");
-        taskController.addNewTask("Exam", "Study for Physics exam", LocalDate.now().plusDays(5), TaskPriority.MEDIUM, TaskStatus.PENDING, "study");
+        taskController.addNewTask("Cleaning", "Tidy up bedroom", LocalDate.now().plusDays(1), TaskPriority.LOW, TaskStatus.PENDING);
+        taskController.addNewTask("Exam", "Study for Physics exam", LocalDate.now().plusDays(5), TaskPriority.MEDIUM, TaskStatus.PENDING);
 
         // printing all tasks
         System.out.println("ALL TASKS:");
@@ -66,21 +65,6 @@ public class Main {
         System.out.println("\nStatus altered from: " + oldStatus);
         System.out.println("To: " + taskToEdit2.getStatus());
 
-        System.out.println("ALL TAGS BEFORE: ");
-        System.out.println(taskController.getTaskTags());
-        System.out.println("TASK TAGS BEFORE: ");
-        System.out.println(taskToEdit2.getTags().stream().findFirst().orElse(null));
-
-        String oldTag = taskToEdit2.getTags().stream().findFirst().orElse(null);
-        taskController.editTag("SHOPPING", "GROCERIES");
-        System.out.println("\nTag altered from: " + oldTag);
-        System.out.println("To: " + taskToEdit2.getTags().stream().findFirst().orElse(null));
-
-        System.out.println("ALL TAGS AFTER: ");
-        System.out.println(taskController.getTaskTags());
-        System.out.println("TASK TAGS AFTER: ");
-        System.out.println(taskToEdit2.getTags().stream().findFirst().orElse(null));
-
         System.out.println("\nALL TASKS:");
         taskController.getTaskListAsString();
 
@@ -91,6 +75,6 @@ public class Main {
         System.out.println("\nTASKS AFTER REMOVAL:");
         taskController.getTaskListAsString();
 
-
+        taskController.stopScheduler();
     }
 }
